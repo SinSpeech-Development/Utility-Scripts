@@ -19,7 +19,7 @@ outFile = 'lexicon.txt'
 constant_symbols = ['<UNK> SPN\n', '<SIL> SIL\n']
 
 # Unambiguous phones
-two_char_phones = ('ae', 'ae:', 'ri', 'ri:', 'ai', 'au', 'ah',
+two_char_phones = ('ae', 'ae:', 'ri', 'ri:', 'ru', 'ru:' 'ai', 'au', 'ah',
                     'ng', 'cn', 'jn', 'nj', 'nd', 'nd^', 'mb')
 twoCharOk = ['a:', 'ae', 'i:', 'u:', 'e:', 'ai', 'o:', 'au', 'c^', 'cn', 't^', 'd^', 's^']
 threeCharOk = ['ae:']
