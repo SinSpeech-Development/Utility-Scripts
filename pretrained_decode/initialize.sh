@@ -1,44 +1,34 @@
 # This script should be run at s5/
 
-nnet=false
-
-if [ ! -d "exp" ]; then
-    echo "Missing exp/"
+if [ "$#" -ne 2 ]; then
+    echo "Missing required arguments. Please provide the following:"
+    echo "1: path to directory which has final.mdl,"
+    echo "2: path to directory which has HCLG.fst"
     exit 1
-fi 
+fi
+
+src="pretrained_decode"
+
+if [ ! -f "path.sh" ]; then
+    cp $src/path.sh .
+    chmod +x ./path.sh
+    echo "Copied path.sh"
+fi
 
 . ./path.sh
-. parse_options.sh
-
-if [ "$#" -ne 3 ]; then
-    if ! $nnet; then
-        if [ "$#" -ne 2 ]; then
-            echo "Missing required arguments. Please provide the following:"
-            echo "1: path to directory which has final.mdl,"
-            echo "2: path to directory which has HCLG.fst"
-            exit 1
-        fi
-    else
-        echo "Missing required arguments. Please provide the following:"
-        echo "1: path to directory which has final.mdl,"
-        echo "2: path to directory which has HCLG.fst"
-        echo "3: path to extractor/"
-        exit 1
-    fi
-fi
-
-if $nnet; then
-    if [ ! f "conf/mfcc_hires.conf" ]; then
-        echo "Missing conf/mfcc_hires.conf"
-        exit 1
-    fi
-fi
 
 ln -s ../../wsj/s5/steps .
 ln -s ../../wsj/s5/utils .
 ln -s ../../../src .
 
-src="pretrained_decode"
+# conf/
+
+if [ ! -d "conf" ]; then
+    cp -a $src/conf ./conf
+    echo "Created conf/ and copied config files"
+fi
+
+# pretrained_decode/
 
 if [ ! -d "${src}/audio" ]; then
     mkdir -p $src/audio
@@ -50,6 +40,8 @@ if [ ! -f "${src}/decode_execution.log" ]; then
     echo "Created ${src}/decode_execution.log"
 fi
 
+# data/
+
 if [ ! -d "data" ]; then
     mkdir -p data
     echo "Created data/"
@@ -60,14 +52,19 @@ if [ ! -d "data/${src}" ]; then
     echo "Created data/${src}"
 fi
 
-mkdir -p data/$src/conf
-cp conf/mfcc.conf data/$src/conf/
-echo "Copied mfcc.conf to data/${src}/conf"
+# mfcc/
 
 if [ ! -d "mfcc" ]; then
     mkdir -p mfcc
     echo "Created mfcc/"
 fi
+
+# exp/
+
+if [ ! -d "exp" ]; then
+    mkdir -p exp
+    echo "Created exp/"
+fi 
 
 if [ ! -d "exp/make_mfcc" ]; then
     mkdir -p exp/make_mfcc
@@ -110,12 +107,3 @@ if [ -f "${mdlDir}/delta_opts" ]; then
 fi
 
 cp -a $HCLGDir/. ./exp/$src/pretrained_exp/graph
-
-if $nnet; then
-    if [ ! -d "exp/$src/pretrained_exp/nnet3/extractor" ]; then
-        mkdir -p exp/$src/pretrained_exp/nnet3/extractor
-        echo "Created exp/${src}/pretrained_exp/nnet3/extractor/"
-    fi
-    extractorDir=$3
-    cp $extractorDir/. ./exp/$src/pretrained_exp/nnet3/extractor
-fi

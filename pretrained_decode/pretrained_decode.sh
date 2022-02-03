@@ -2,10 +2,6 @@
 
 . ./path.sh
 
-nnet=false
-
-. parse_options.sh
-
 src="pretrained_decode"
 
 # log the terminal outputs
@@ -43,24 +39,9 @@ export decode_cmd="utils/run.pl --mem 2G"
 
 utils/fix_data_dir.sh data/$src
 
-if ! $nnet; then
-    steps/make_mfcc.sh --nj 1 data/$src exp/make_mfcc/$src mfcc
-    steps/compute_cmvn_stats.sh data/$src exp/make_mfcc/$src mfcc
-    utils/fix_data_dir.sh data/$src
-
-    else
-    export train_cmd="run.pl"
-
-    steps/make_mfcc.sh --nj 1 --mfcc-config conf/mfcc_hires.conf \
-      data/${src}_hires exp/make_mfcc/${src}_hires mfcc
-    steps/compute_cmvn_stats.sh data/${src}_hires exp/make_mfcc/${src}_hires mfcc
-    utils/fix_data_dir.sh data/${src}_hires
-
-    nspk=$(wc -l <data/${src}_hires/spk2utt)
-    steps/online/nnet2/extract_ivectors_online.sh --cmd "$train_cmd" --nj "${nspk}" \
-      data/${src}_hires exp/$src/pretrained_exp/nnet3/extractor \
-      exp/$src/pretrained_exp/nnet3/ivectors_${data}_hires
-fi
+steps/make_mfcc.sh --nj 1 data/$src exp/make_mfcc/$src mfcc
+steps/compute_cmvn_stats.sh data/$src exp/make_mfcc/$src mfcc
+utils/fix_data_dir.sh data/$src
 
 end2=$(date +%s.%N) 
 
