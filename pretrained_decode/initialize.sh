@@ -1,15 +1,37 @@
 # This script should be run at s5/
 
+nnet=false
+
 if [ ! -d "exp" ]; then
     echo "Missing exp/"
     exit 1
 fi 
 
-if [ "$#" -ne 2 ]; then
-    echo "Missing required arguments. Please provide the following:"
-    echo "1: path to directory which has final.mdl,"
-    echo "2: path to directory which has HCLG.fst"
-    exit 1
+. ./path.sh
+. parse_options.sh
+
+if [ "$#" -ne 3 ]; then
+    if ! $nnet; then
+        if [ "$#" -ne 2 ]; then
+            echo "Missing required arguments. Please provide the following:"
+            echo "1: path to directory which has final.mdl,"
+            echo "2: path to directory which has HCLG.fst"
+            exit 1
+        fi
+    else
+        echo "Missing required arguments. Please provide the following:"
+        echo "1: path to directory which has final.mdl,"
+        echo "2: path to directory which has HCLG.fst"
+        echo "3: path to extractor/"
+        exit 1
+    fi
+fi
+
+if $nnet; then
+    if [ ! f "conf/mfcc_hires.conf" ]; then
+        echo "Missing conf/mfcc_hires.conf"
+        exit 1
+    fi
 fi
 
 ln -s ../../wsj/s5/steps .
@@ -88,3 +110,12 @@ if [ -f "${mdlDir}/delta_opts" ]; then
 fi
 
 cp -a $HCLGDir/. ./exp/$src/pretrained_exp/graph
+
+if $nnet; then
+    if [ ! -d "exp/$src/pretrained_exp/nnet3/extractor" ]; then
+        mkdir -p exp/$src/pretrained_exp/nnet3/extractor
+        echo "Created exp/${src}/pretrained_exp/nnet3/extractor/"
+    fi
+    extractorDir=$3
+    cp $extractorDir/. ./exp/$src/pretrained_exp/nnet3/extractor
+fi
