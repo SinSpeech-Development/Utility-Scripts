@@ -127,7 +127,9 @@ mdlDir=$1
 HCLGDir=$2
 
 cp $mdlDir/final.mdl ./exp/$srcHires/pretrained_exp
-cp $mdlDir/final.mat ./exp/$srcHires/pretrained_exp
+if [ -f "${mdlDir}/final.mat" ]; then
+    cp $mdlDir/final.mat ./exp/$srcHires/pretrained_exp
+fi
 if [ -f "${mdlDir}/splice_opts" ]; then
     cp $mdlDir/splice_opts ./exp/$srcHires/pretrained_exp
 fi
@@ -143,7 +145,8 @@ cp -a $HCLGDir/. ./exp/$srcHires/pretrained_exp/graph
 extractorDir=$3
 
 cp -a $extractorDir/. ./exp/$srcHires/pretrained_exp/nnet3/extractor
-
-# graphDir=$4
+if [ -d "exp/${srcHires}/pretrained_exp/nnet3/extractor/log" ]; then
+    rm -r exp/$srcHires/pretrained_exp/nnet3/extractor/log
+fi
 
 cp -a $HCLGDir/. ./exp/$srcHires/pretrained_exp/chain/tree_sp/graph
